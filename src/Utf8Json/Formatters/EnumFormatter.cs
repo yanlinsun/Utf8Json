@@ -152,10 +152,16 @@ namespace Utf8Json.Formatters
                 var enumMember = item.GetCustomAttributes(typeof(EnumMemberAttribute), true)
                    .OfType<EnumMemberAttribute>()
                    .FirstOrDefault();
+#if !NET45
+                var jsonMember = item.GetCustomAttribute<System.Text.Json.Serialization.JsonPropertyNameAttribute>(true);
+#endif
 
                 values.Add(value);
                 names.Add(
-                     (enumMember != null && enumMember.Value != null) ? enumMember.Value
+#if !NET45
+                     (jsonMember != null && jsonMember.Name != null) ? jsonMember.Name :
+#endif
+                   (enumMember != null && enumMember.Value != null) ? enumMember.Value
                    : (dataMember != null && dataMember.Name != null) ? dataMember.Name
                    : name);
             }
